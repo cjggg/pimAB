@@ -7,8 +7,9 @@ import java.util.ResourceBundle;
 import application.Main;
 import controller.MemberService;
 import controller.MemberServiceImpl;
-import controller.TestService;
-import controller.TestServiceImpl;
+import controller.TestController;
+import controller.TestControllerImpl;
+import examples.TableViewTest.Person;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -28,7 +29,7 @@ public class MemberViewController implements Initializable {
 	@FXML	private Button btnUpdate;
 	@FXML	private Button btnDelete;
 	
-	@FXML	private Button btnExecute; //연관 컨틀롤 들
+	@FXML	private Button btnExecute;
 	@FXML	private TextArea taExecute;
 	@FXML	private TextField tfExecute;
 	
@@ -42,13 +43,12 @@ public class MemberViewController implements Initializable {
 	@FXML	private TableColumn<Member, String> columnID;
 	@FXML	private TableColumn<Member, String> columnPW;
 	@FXML	private TableColumn<Member, String> columnMobilePhone;
-	
-	
+		
 	private final ObservableList<Member> data = FXCollections.observableArrayList();
-	
 	ArrayList<Member> memberList;
 	MemberService memberService;
-	TestService ts;
+	
+	TestController ts;
 	
 	public MemberViewController() {
 		
@@ -56,45 +56,47 @@ public class MemberViewController implements Initializable {
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		ts=new TestServiceImpl();
-		/*memberService = new MemberServiceImpl();
-		
+		ts = new TestControllerImpl();
+		// tableViewMember = new TableView<Member>();
+
+		memberService = new MemberServiceImpl();
 		columnName.setCellValueFactory(cvf -> cvf.getValue().unameProperty());
 		columnID.setCellValueFactory(cvf -> cvf.getValue().uidProperty());
 		//columnPW.setCellValueFactory(cvf -> cvf.getValue().upwProperty());
 		
 		tableViewMember.getSelectionModel().selectedItemProperty().addListener(
 				(observable, oldValue, newValue) -> showMemberInfo(newValue));
-		
-		btnRegister.setOnMouseClicked(event -> handleCreate());		
-		// btnDelete.setOnMouseClicked(e -> handleDelete());
-		*/
+
 		btnCreate.setOnMouseClicked(event -> handleCreate());		
-		btnExecute.setOnMouseClicked(event -> handleExecute());		
-		//loadMemberTableView();
+		// btnDelete.setOnMouseClicked(e -> handleDelete());		
+		btnExecute.setOnMouseClicked(event -> handleExecute());	
+		
+		// loadMemberTableView();
 	}
-	private Object handleCreate() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-	String str="";
+	String str = ""; // 인스턴스 변수 - 객체 변수, 객체가 존재하는 동안 메모리에 존재
 	@FXML 
 	private void handleExecute() { // event source, listener, handler
-		str=taExecute.getText();
-		str=str+ts.appendTextArea(str+"Hello JavaFx!"+tfExecute.getText()+"!\n");
+		str = ts.setTextArea(tfExecute.getText());
+		/*
+		str = taExecute.getText();
+		String name = tfExecute.getText();
+		str = str + ts.appendTextArea(name);
+		*/
+		taExecute.setText(str);
 	}
+	
 	private void showMemberInfo(Member member) {
 		if (member != null) {
 			tfID.setText(member.getUid());
 			tfPW.setText(member.getUpw());
 			tfName.setText(member.getUname());
-			tfMobilePhone.setText(member.getMobilePhone());
+//			tfMobilePhone.setText(member.getMobilePhone());
 		}
 		 else {
 			 tfID.setText("");
 			 tfPW.setText("");
 		     tfName.setText("");
-		     tfMobilePhone.setText("010");
+//		     tfMobilePhone.setText("010");
 		 }
 	}
 	
@@ -107,6 +109,15 @@ public class MemberViewController implements Initializable {
 	}
 	
 	
+	@FXML 
+	private void handleCreate() { // event source, listener, handler
+		if(tfID.getText().length() > 0) {
+			Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), "");
+			data.add(newMember);			
+			tableViewMember.setItems(data);
+		} else
+			showAlert("ID 입력오류");
+	}
 	@FXML 
 	private void handleUpdate() {
 		Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), tfMobilePhone.getText());
