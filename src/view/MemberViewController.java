@@ -7,6 +7,8 @@ import java.util.ResourceBundle;
 import application.Main;
 import controller.MemberService;
 import controller.MemberServiceImpl;
+import controller.TestService;
+import controller.TestServiceImpl;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,15 +17,20 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import model.Member;
 
 public class MemberViewController implements Initializable {
-	@FXML	private Button btnRegister;
+	@FXML	private Button btnCreate;
 	@FXML	private Button btnUpdate;
 	@FXML	private Button btnDelete;
+	
+	@FXML	private Button btnExecute; //ì—°ê´€ ì»¨í‹€ë¡¤ ë“¤
+	@FXML	private TextArea taExecute;
+	@FXML	private TextField tfExecute;
 	
 	@FXML	private TextField tfID;
 	@FXML	private PasswordField tfPW;
@@ -38,8 +45,10 @@ public class MemberViewController implements Initializable {
 	
 	
 	private final ObservableList<Member> data = FXCollections.observableArrayList();
+	
 	ArrayList<Member> memberList;
 	MemberService memberService;
+	TestService ts;
 	
 	public MemberViewController() {
 		
@@ -47,7 +56,8 @@ public class MemberViewController implements Initializable {
 	
 	@Override
 	public void initialize(URL arg0, ResourceBundle arg1) {
-		memberService = new MemberServiceImpl();
+		ts=new TestServiceImpl();
+		/*memberService = new MemberServiceImpl();
 		
 		columnName.setCellValueFactory(cvf -> cvf.getValue().unameProperty());
 		columnID.setCellValueFactory(cvf -> cvf.getValue().uidProperty());
@@ -58,9 +68,21 @@ public class MemberViewController implements Initializable {
 		
 		btnRegister.setOnMouseClicked(event -> handleCreate());		
 		// btnDelete.setOnMouseClicked(e -> handleDelete());
-		loadMemberTableView();
+		*/
+		btnCreate.setOnMouseClicked(event -> handleCreate());		
+		btnExecute.setOnMouseClicked(event -> handleExecute());		
+		//loadMemberTableView();
 	}
-	
+	private Object handleCreate() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	String str="";
+	@FXML 
+	private void handleExecute() { // event source, listener, handler
+		str=taExecute.getText();
+		str=str+ts.appendTextArea(str+"Hello JavaFx!"+tfExecute.getText()+"!\n");
+	}
 	private void showMemberInfo(Member member) {
 		if (member != null) {
 			tfID.setText(member.getUid());
@@ -84,17 +106,7 @@ public class MemberViewController implements Initializable {
 		tableViewMember.setItems(data);
 	}
 	
-	@FXML 
-	private void handleCreate() { // event source, listener, handler
-		if(tfID.getText().length() > 0) {
-			Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), tfMobilePhone.getText());
-			if(memberService.create(newMember) >= 0)	
-				data.add(newMember);
-			else
-				showAlert("ID Áßº¹À¸·Î µî·ÏÇÒ ¼ö ¾ø½À´Ï´Ù.");
-		} else
-			showAlert("ID´Â ÇÊ¼öÇ×¸ñ ÀÔ´Ï´Ù.");
-	}
+	
 	@FXML 
 	private void handleUpdate() {
 		Member newMember = new Member(tfID.getText(), tfPW.getText(), tfName.getText(), tfMobilePhone.getText());
@@ -104,7 +116,7 @@ public class MemberViewController implements Initializable {
 			tableViewMember.getItems().set(selectedIndex, newMember);
 			memberService.update(newMember);			
 		} else {
-			showAlert("¼öÁ¤À» ÇÒ ¼ö ¾ø½À´Ï´Ù.");          
+			showAlert("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");          
         }
 	}
 	
@@ -114,15 +126,15 @@ public class MemberViewController implements Initializable {
 		if (selectedIndex >= 0) {
 			memberService.delete(tableViewMember.getItems().remove(selectedIndex));			
 		} else {
-			showAlert("»èÁ¦¸¦ ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+			showAlert("ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï´ï¿½.");
         }
 	}
 	
 	private void showAlert(String message) {
 		Alert alert = new Alert(AlertType.INFORMATION);
         alert.initOwner(mainApp.getRootStage());
-        alert.setTitle("È®ÀÎ");
-        alert.setContentText("È®ÀÎ : " + message);            
+        alert.setTitle("È®ï¿½ï¿½");
+        alert.setContentText("È®ï¿½ï¿½ : " + message);            
         alert.showAndWait();
 	}
 
